@@ -75,9 +75,9 @@
       .eq-mobile  { display:block; }
     }
 
-    /* mobile: replace the interactive iframe with a static image */
+    /* mobile: replace the interactive iframe with a static image that opens the live version on tap */
     .viz-mobile { display:none; }
-    .viz-mobile { border-radius:10px; }
+    .viz-mobile img { border-radius:10px; }
     @media (max-width: 768px){
       .demo-frame { display:none; }
       .viz-mobile { display:block; }
@@ -255,7 +255,9 @@
         <div class="demo-frame ratio-tradeoff">
           <iframe src="./static/interactive/tradeoff.html" title="Task accuracy vs privacy trade-off" loading="lazy"></iframe>
         </div>
-        <img class="viz-mobile interpolation-image" src="./static/figures/tradeoff_mobile.png" alt="Task accuracy vs. privacy trade-off across models.">
+        <a class="viz-mobile" href="./static/interactive/tradeoff.html" target="_blank" rel="noopener">
+          <img class="interpolation-image" src="./static/figures/tradeoff_mobile.png" alt="Task accuracy vs. privacy trade-off across models.">
+        </a>
         <!-- <p class="fig-caption">
           <b>Task accuracy vs. privacy score</b>  across 22 models, prompt variants, and TextGrad
           prompt optimization. No model can be both useful and private, revealing an inherent vulnerability in current models.
@@ -336,7 +338,9 @@
         <div class="demo-frame ratio-iso">
           <iframe src="./static/interactive/isolation_results.html" title="Privacy gains from Oracle masking" loading="lazy"></iframe>
         </div>
-        <img class="viz-mobile interpolation-image" src="./static/figures/isolation_mobile.png" alt="Privacy gains under Oracle masking.">
+        <a class="viz-mobile" href="./static/interactive/isolation_results.html" target="_blank" rel="noopener">
+          <img class="interpolation-image" src="./static/figures/isolation_mobile.png" alt="Privacy gains under Oracle masking.">
+        </a>
         <!-- <p class="fig-caption">
           Applying private field isolation. Arrows show each model's shift under Oracle
           masking: privacy score jumps to <b>&ge;90%</b> across families and scales while task accuracy is
