@@ -43,11 +43,29 @@
     .theorem-box { background:#fafafa; border-left:4px solid #A40000; border-radius:6px; padding:1.5rem 1.75rem; text-align:left; }
     .theorem-box .thm-label { font-variant: small-caps; font-weight:700; color:#A40000; letter-spacing:.04em; }
     .fig-caption { font-size:.95rem; color:#4a4a4a; margin-top:.75rem; }
-    /* interactive embeds */
-    .demo-frame { width:100%; border:1px solid #e6e6e6; border-radius:10px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,.06); background:#eef1f4; }
-    .demo-frame iframe { width:100%; height:100%; border:0; display:block; }
-    .demo-tall { height:900px; }
-    @media (max-width: 768px){ .demo-tall { height:900px; } }
+
+    /* interactive embeds ---------------------------------------------------
+       The standalone figures size everything in viewport units (vw/vh) with
+       no mobile breakpoint. Fixing the iframe HEIGHT in px makes them distort
+       on phones (narrow width + tall fixed height). Instead we keep a CONSTANT
+       aspect ratio equal to the desktop view, so the whole figure scales
+       uniformly (no distortion) all the way down to mobile. */
+    .demo-frame { position:relative; width:100%; border:1px solid #e6e6e6; border-radius:10px;
+                  overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,.06); background:#eef1f4; }
+    .demo-frame iframe { position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+    .ratio-tradeoff { aspect-ratio: 24 / 25; }   /* ~960 x 1000 on desktop */
+    .ratio-iso      { aspect-ratio: 48 / 41; }    /* ~960 x 820  on desktop */
+    /* fallback for browsers without aspect-ratio support */
+    @supports not (aspect-ratio: 1 / 1){
+      .ratio-tradeoff { height:1000px; }
+      .ratio-iso      { height:820px; }
+    }
+    .viz-open { display:inline-block; margin-top:.6rem; font-size:.9rem; color:hsl(204,86%,45%); }
+    .viz-hint { display:none; }
+    /* on phones, nudge users to open full screen for the best view */
+    @media (max-width: 600px){
+      .viz-hint { display:block; font-size:.85rem; color:#7a7a7a; margin-top:.5rem; }
+    }
   </style>
 </head>
 <body>
@@ -218,9 +236,11 @@
 
       <div class="content">
         <h4 class="title is-4">No model escapes the trade-off</h4>
-        <div class="demo-frame" style="height:1000px">
+        <div class="demo-frame ratio-tradeoff">
           <iframe src="./static/interactive/tradeoff.html" title="Task accuracy vs privacy trade-off" loading="lazy"></iframe>
         </div>
+        <a class="viz-open" href="./static/interactive/tradeoff.html" target="_blank" rel="noopener">Open interactive in full screen &nearr;</a>
+        <p class="viz-hint">On a phone this figure is best viewed full screen &mdash; tap the link above.</p>
         <!-- <p class="fig-caption">
           <b>Task accuracy vs. privacy score</b>  across 22 models, prompt variants, and TextGrad
           prompt optimization. No model can be both useful and private, revealing an inherent vulnerability in current models.
@@ -289,9 +309,11 @@
 
       <div class="content">
         <h4 class="title is-4">Isolation reaches the corner that was empty</h4>
-        <div class="demo-frame" style="height:820px">
+        <div class="demo-frame ratio-iso">
           <iframe src="./static/interactive/isolation_results.html" title="Privacy gains from Oracle masking" loading="lazy"></iframe>
         </div>
+        <a class="viz-open" href="./static/interactive/isolation_results.html" target="_blank" rel="noopener">Open interactive in full screen &nearr;</a>
+        <p class="viz-hint">On a phone this figure is best viewed full screen &mdash; tap the link above.</p>
         <!-- <p class="fig-caption">
           Applying private field isolation. Arrows show each model's shift under Oracle
           masking: privacy score jumps to <b>&ge;90%</b> across families and scales while task accuracy is
