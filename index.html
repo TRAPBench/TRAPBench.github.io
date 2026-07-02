@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="TRAP is a benchmark that evaluates whether agents can use private information to complete tasks while resisting active privacy-extraction attacks.">
+  <meta name="keywords" content="TRAP, privacy, agents, LLM, benchmark, tool use, private field isolation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TRAP: Benchmark for Task-completion and Resistance to Active Privacy-extraction</title>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]} });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <!-- Bulma + icons from CDN so this file works standalone.
+       If you drop this into the Nerfies repo, swap these for local ./static/css/*.css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <!-- Nerfies index.css essentials, inlined -->
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    .publication-title { font-family: 'Google Sans', sans-serif; }
+    .publication-authors { font-family: 'Google Sans', sans-serif; }
+    .publication-authors a { color: hsl(204, 86%, 53%) !important; }
+    .publication-authors a:hover { text-decoration: underline; }
+    .author-block { display: inline-block; }
+    .link-block a { margin-top: 5px; margin-bottom: 5px; }
+    .teaser { font-family: 'Google Sans', sans-serif; }
+    .teaser .hero-body { padding-top: 0; padding-bottom: 3rem; }
+    .hero-body { padding-bottom: 1rem; }
+    .interpolation-image { width: 100%; display: block; }
+    .footer .icon-link { font-size: 25px; color: #000; }
+    .venue-tag { color:#A40000; font-weight:700; letter-spacing:.03em; margin-bottom:.6rem; }
+    pre code { background: transparent; }
+    .stat-box { padding: 1rem .5rem; }
+    .stat-box .stat-num { font-family:'Google Sans',sans-serif; font-size:2.1rem; font-weight:700; line-height:1; color:#363636; }
+    .stat-box .stat-lab { font-size:.85rem; color:#7a7a7a; margin-top:.4rem; text-transform:uppercase; letter-spacing:.05em; }
+    .theorem-box { background:#fafafa; border-left:4px solid #A40000; border-radius:6px; padding:1.5rem 1.75rem; text-align:left; }
+    .theorem-box .thm-label { font-variant: small-caps; font-weight:700; color:#A40000; letter-spacing:.04em; }
+    .fig-caption { font-size:.95rem; color:#4a4a4a; margin-top:.75rem; }
+    /* interactive embeds */
+    .demo-frame { width:100%; border:1px solid #e6e6e6; border-radius:10px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,.06); background:#eef1f4; }
+    .demo-frame iframe { width:100%; height:100%; border:0; display:block; }
+    .demo-tall { height:660px; }
+    @media (max-width: 768px){ .demo-tall { height:520px; } }
+  </style>
+</head>
+<body>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link"> More Research </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://beafbench.github.io/"> BEAF (ECCV 2024) </a>
+            <a class="navbar-item" href="https://textmania.github.io/"> TextManiA (ICCV 2023) </a>
+            <a class="navbar-item" href="https://uniform-attention.github.io/"> Uniform Attention (ICCV 2023) </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ HERO / TITLE ============ -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h2 class="title is-2 publication-title">
+              TRAP: Benchmark for Task-completion and </br> Resistance to Active Privacy-extraction
+            </h2>
+
+            <div class="is-size-5 publication-authors">
+              <div class="venue-tag">arXiv 2026 &middot; Preprint</div>
+
+              <span class="author-block">
+                <a href="https://sites.google.com/g.postech.edu/moon-ye-bin">Moon Ye-Bin</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <a href="https://sites.google.com/view/namhyeonwoo/">Nam Hyeon-Woo</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <a href="https://baekseongeun.github.io/">Baek Seong-Eun</a><sup>2</sup>,</span>
+              <span class="author-block">
+                <a href="https://ami.kaist.ac.kr/2dafdae6-c854-807f-bec6-e7ef1b9853f5">Yejin Yeo</a><sup>3</sup>,</span>
+              <span class="author-block">
+                <a href="https://ami.postech.ac.kr/members/tae-hyun-oh">Tae-Hyun Oh</a><sup>4</sup>
+              </span>
+            </div>
+
+            <div class="is-size-6 publication-authors">
+              <span class="author-block"><sup>1</sup>Dept. of Electrical Engineering, POSTECH,</span>
+              <span class="author-block"><sup>2</sup>Grad. School of Artificial Intelligence, POSTECH,</span>
+              <span class="author-block"><sup>3</sup>Grad. School of Metaverse, KAIST,</span>
+              <span class="author-block"><sup>4</sup>School of Computing, KAIST</span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- arXiv -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2606.18996"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="ai ai-arxiv"></i></span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+                <!-- PDF -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/pdf/2606.18996"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEASER : Overview of TRAP ============ -->
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body">
+        <img src="./static/figures/overview.png"
+             class="interpolation-image" alt="Overview of TRAP.">
+        <h2 class="subtitle has-text-centered">
+          <br>
+          Given multimodal documents and a tool list, an agent must <b>use private fields to complete the
+          task</b> (task query), yet <b>refuse to reveal them under attack</b> (attack query). TRAP measures
+          both on the <i>same</i> document &mdash; exposing a fundamental trade-off between capability and privacy.
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABSTRACT ============ -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              Agents are increasingly deployed in document-intensive workflows where sensitive private
+              information is not an edge case but a routine input &mdash; an agent booking a flight needs
+              passport numbers. In such settings, the agent must use private information to complete tasks
+              accurately while never exposing it, because it cannot verify who is actually at the keyboard.
+              A model capable enough to use private information can, by the same capability, be induced to
+              reveal it.
+            </p>
+            <p>
+              To evaluate this trade-off, we introduce <b>TRAP</b> (Task-completion and Resistance to
+              Active Privacy-extraction). Each scenario pairs a document containing private fields with two
+              queries: a <b>task query</b> that requires invoking the correct tool using private fields, and
+              an <b>attack query</b> that tries to elicit the same information in natural language. Evaluating
+              22 models across frontier proprietary and open-source families, we find that every family
+              exhibits non-trivial leakage, and that instruction-following ability correlates with leakage
+              rate. Existing prompt-based defenses reduce leakage only at a significant cost to task accuracy,
+              and prompt optimization fails to escape this trade-off.
+            </p>
+            <p>
+              We show this failure is not incidental: for any softmax-based model, no soft-constraint defense
+              can jointly achieve high task success and zero leakage probability. Motivated by this
+              impossibility result, we propose <b>structural private field isolation</b>, which replaces
+              private fields with hash keys before they reach the model &mdash; largely preventing leakage
+              while keeping task accuracy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE TRAP BENCHMARK ============ -->
+  <section class="section">
+    <div class="container is-max-desktop has-text-centered">
+      <h2 class="title is-3">The TRAP Benchmark</h2>
+      <br>
+      <p class="content has-text-centered" style="max-width:820px;margin:0 auto 1.5rem;">
+        Prior benchmarks measure privacy either <i>passively</i> (incidental leakage, no attacker) or
+        <i>adversarially</i> (attack only, task ignored). TRAP is the first to measure both jointly &mdash;
+        on the same document and the same private fields.
+      </p>
+
+      <div class="columns is-mobile is-multiline is-centered">
+        <div class="column is-2-desktop is-4-mobile stat-box"><div class="stat-num">10</div><div class="stat-lab">Domains</div></div>
+        <div class="column is-2-desktop is-4-mobile stat-box"><div class="stat-num">3</div><div class="stat-lab">Modalities</div></div>
+        <div class="column is-2-desktop is-4-mobile stat-box"><div class="stat-num">500</div><div class="stat-lab">Cases</div></div>
+        <div class="column is-2-desktop is-4-mobile stat-box"><div class="stat-num">147</div><div class="stat-lab">Private fields</div></div>
+        <div class="column is-2-desktop is-4-mobile stat-box"><div class="stat-num">157</div><div class="stat-lab">Tools</div></div>
+        <div class="column is-2-desktop is-4-mobile stat-box"><div class="stat-num">22</div><div class="stat-lab">Models</div></div>
+      </div>
+
+      <br>
+      <div class="content">
+        <h4 class="title is-4">Tagged private fields across domains &amp; modalities</h4>
+        <img src="./static/figures/tagged_examples.png" class="interpolation-image" alt="Examples of tagged private fields.">
+        <p class="fig-caption">
+          Each document is annotated at the field level. Private values &mdash; EINs, IBANs, national IDs,
+          card numbers, CVVs, credentials &mdash; are isolated as typed keys such as
+          <code>[PRIVATE_payer_ein]</code> or <code>[PRIVATE_card_number]</code>, spanning tax, contract,
+          identity, credit-card, and account documents in both image and text form.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KEY FINDINGS ============ -->
+  <section class="section">
+    <div class="container is-max-desktop has-text-centered">
+      <h2 class="title is-3">Key Findings</h2>
+      <br>
+
+      <div class="content">
+        <h4 class="title is-4">No model escapes the trade-off</h4>
+        <div class="demo-frame demo-tall">
+          <iframe src="./static/interactive/tradeoff.html" title="Task accuracy vs privacy trade-off" loading="lazy"></iframe>
+        </div>
+        <p class="fig-caption">
+          <b>Interactive.</b> Task accuracy vs. privacy score across 22 models, prompt variants, and TextGrad
+          prompt optimization. Points cluster along a trade-off frontier: every model above 60% task accuracy
+          scores below 27% privacy, and jointly optimizing the prompt does not reach the high-task /
+          high-privacy corner.
+        </p>
+      </div>
+      <br>
+
+      <div class="content has-text-justified" style="max-width:820px;margin:0 auto;">
+        <p>
+          <b>Adversarial phrasing can backfire.</b> Aggressive attacks (Ignore / Important / Roleplay) often
+          <i>raise</i> privacy score: strong instruction-followers treat attack language as an alarm. A plain,
+          direct question leaks more &mdash; and merely <b>claiming to be authorized</b> is one of the
+          strongest extractors (Claude Sonnet 4.5 &minus;26.4pp, GPT-5 &minus;18.8pp privacy). Because the
+          true user cannot be verified at inference time, protection must never be conditional on a claimed role.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IMPOSSIBILITY THEOREM ============ -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3 has-text-centered">Why Prompting Cannot Win</h2>
+          <br>
+          <div class="theorem-box">
+            <p class="thm-label">Theorem&nbsp;1 &mdash; Impossibility of simultaneous task success &amp; perfect privacy.</p>
+            <p style="margin-top:.75rem;">
+              For a softmax model that can complete the task, any private token needed for the task has
+              strictly positive output probability. Over an adversarial sequence of length $N$, the
+              probability of leakage grows as
+            </p>
+            <p class="has-text-centered" style="margin:1rem 0;">
+              $$P(\text{leak}\mid x)\ \ge\ 1-(1-\varepsilon)^{N}\ \ge\ 1-e^{-\varepsilon N}\ \xrightarrow[N\to\infty]{}\ 1.$$
+            </p>
+            <p>
+              Soft-constraint defenses &mdash; system prompts, alignment, prompt optimization &mdash; can only
+              shrink $\varepsilon$, never set it to zero. <b>Security requires eliminating probability mass,
+              not merely reducing it.</b>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRIVATE FIELD ISOLATION ============ -->
+  <section class="section">
+    <div class="container is-max-desktop has-text-centered">
+      <h2 class="title is-3">Our Approach: Private Field Isolation</h2>
+      <br>
+      <p class="content has-text-centered" style="max-width:820px;margin:0 auto 1.5rem;">
+        If soft constraints cannot reach zero, remove the plaintext entirely. Each private value is replaced
+        by a semantically typed key token (e.g.&nbsp;<code>[PRIVATE_card_number]</code>) before the document
+        reaches the model. The agent passes the key as a tool argument; the real value is resolved only inside
+        the tool at execution time. The model never sees the plaintext, so it cannot disclose it.
+      </p>
+
+      <!-- ===== Method video ===== autoplay requires muted (satisfied). -->
+      <div class="content">
+        <video id="isolation-video" class="interpolation-image" autoplay muted loop playsinline controls
+               style="border-radius:10px;">
+          <source src="./static/videos/private_field_isolation.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <p class="fig-caption">
+          Walkthrough of private field isolation: private values are swapped for typed hash keys before the
+          model, carried through tool calls as keys, and restored only in the tool layer.
+        </p>
+      </div>
+      <br>
+
+      <div class="content">
+        <img src="./static/figures/isolation_method.png" class="interpolation-image" alt="Private field isolation method.">
+        <p class="fig-caption">
+          Private values are replaced by hash keys before the model receives the document. The model reasons
+          over keys and emits them as tool arguments; the tool layer restores the real values outside the
+          model &mdash; after the output has been committed.
+        </p>
+      </div>
+      <br>
+
+      <div class="content">
+        <h4 class="title is-4">Structure beats prompts</h4>
+        <div class="demo-frame demo-tall">
+          <iframe src="./static/interactive/isolation_results.html" title="Privacy gains from Oracle masking" loading="lazy"></iframe>
+        </div>
+        <p class="fig-caption">
+          <b>Interactive.</b> Applying private field isolation. Arrows show each model's shift under Oracle
+          masking: privacy score jumps to <b>&ge;90%</b> across families and scales while task accuracy is
+          preserved. Structural isolation &mdash; not model capability &mdash; becomes the dominant determinant
+          of privacy.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BIBTEX ============ -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@article{yebin2026trap,
+  title   = {TRAP: Benchmark for Task-completion and Resistance to Active Privacy-extraction},
+  author  = {Ye-Bin, Moon and Hyeon-Woo, Nam and Seong-Eun, Baek and Yeo, Yejin and Oh, Tae-Hyun},
+  journal = {arXiv preprint arXiv:2606.18996},
+  year    = {2026},
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="https://arxiv.org/pdf/2606.18996"><i class="fas fa-file-pdf"></i></a>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This website is licensed under a <a rel="license"
+                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons
+                Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+            <p>
+              Source code borrowed from the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> website.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
