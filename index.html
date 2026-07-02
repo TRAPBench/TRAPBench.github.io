@@ -9,7 +9,12 @@
   <title>TRAP: Benchmark for Task-completion and Resistance to Active Privacy-extraction</title>
 
   <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]} });
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      CommonHTML: { linebreaks: { automatic: true } },
+      "HTML-CSS":  { linebreaks: { automatic: true } },
+      SVG:         { linebreaks: { automatic: true } }
+    });
   </script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
 
@@ -62,9 +67,18 @@
     }
     .viz-open { display:inline-block; margin-top:.6rem; font-size:.9rem; color:hsl(204,86%,45%); }
     .viz-hint { display:none; }
-    /* on phones, nudge users to open full screen for the best view */
-    @media (max-width: 600px){
-      .viz-hint { display:block; font-size:.85rem; color:#7a7a7a; margin-top:.5rem; }
+
+    /* equation: allow wrapping; scroll only as a last resort so it never bleeds off-screen */
+    .eq { overflow-x:auto; overflow-y:hidden; max-width:100%; }
+    .eq .MathJax_Display, .eq .mjx-chtml { max-width:100%; }
+
+    /* mobile: replace the interactive iframe with a static image (tap to open the live version) */
+    .viz-mobile { display:none; }
+    .viz-mobile img { border-radius:10px; }
+    @media (max-width: 768px){
+      .demo-frame { display:none; }
+      .viz-mobile { display:block; }
+      .viz-hint   { display:block; font-size:.85rem; color:#7a7a7a; margin-top:.5rem; }
     }
   </style>
 </head>
@@ -239,8 +253,10 @@
         <div class="demo-frame ratio-tradeoff">
           <iframe src="./static/interactive/tradeoff.html" title="Task accuracy vs privacy trade-off" loading="lazy"></iframe>
         </div>
-        <a class="viz-open" href="./static/interactive/tradeoff.html" target="_blank" rel="noopener">Open interactive in full screen &nearr;</a>
-        <p class="viz-hint">On a phone this figure is best viewed full screen &mdash; tap the link above.</p>
+        <a class="viz-mobile" href="./static/interactive/tradeoff.html" target="_blank" rel="noopener">
+          <img src="./static/figures/tradeoff_mobile.png" class="interpolation-image" alt="Task accuracy vs. privacy trade-off across models.">
+        </a>
+        <p class="viz-hint">Tap the figure to open the interactive version.</p>
         <!-- <p class="fig-caption">
           <b>Task accuracy vs. privacy score</b>  across 22 models, prompt variants, and TextGrad
           prompt optimization. No model can be both useful and private, revealing an inherent vulnerability in current models.
@@ -269,7 +285,7 @@
               strictly positive output probability. Over an adversarial sequence of length $N$, the
               probability of leakage grows as
             </p>
-            <p class="has-text-centered" style="margin:1rem 0;">
+            <p class="has-text-centered eq" style="margin:1rem 0;">
               $$P(\text{leak}\mid x)\ \ge\ 1-(1-\varepsilon)^{N}\ \ge\ 1-e^{-\varepsilon N}\ \xrightarrow[N\to\infty]{}\ 1.$$
             </p>
             <p>
@@ -312,8 +328,10 @@
         <div class="demo-frame ratio-iso">
           <iframe src="./static/interactive/isolation_results.html" title="Privacy gains from Oracle masking" loading="lazy"></iframe>
         </div>
-        <a class="viz-open" href="./static/interactive/isolation_results.html" target="_blank" rel="noopener">Open interactive in full screen &nearr;</a>
-        <p class="viz-hint">On a phone this figure is best viewed full screen &mdash; tap the link above.</p>
+        <a class="viz-mobile" href="./static/interactive/isolation_results.html" target="_blank" rel="noopener">
+          <img src="./static/figures/isolation_mobile.png" class="interpolation-image" alt="Privacy gains under Oracle masking.">
+        </a>
+        <p class="viz-hint">Tap the figure to open the interactive version.</p>
         <!-- <p class="fig-caption">
           Applying private field isolation. Arrows show each model's shift under Oracle
           masking: privacy score jumps to <b>&ge;90%</b> across families and scales while task accuracy is
