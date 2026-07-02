@@ -65,20 +65,22 @@
       .ratio-tradeoff { height:1000px; }
       .ratio-iso      { height:820px; }
     }
-    .viz-open { display:inline-block; margin-top:.6rem; font-size:.9rem; color:hsl(204,86%,45%); }
-    .viz-hint { display:none; }
-
     /* equation: allow wrapping; scroll only as a last resort so it never bleeds off-screen */
     .eq { overflow-x:auto; overflow-y:hidden; max-width:100%; }
     .eq .MathJax_Display, .eq .mjx-chtml { max-width:100%; }
+    /* show one-line equation on wide screens, stacked equation on narrow screens */
+    .eq-mobile { display:none; }
+    @media (max-width: 600px){
+      .eq-desktop { display:none; }
+      .eq-mobile  { display:block; }
+    }
 
-    /* mobile: replace the interactive iframe with a static image (tap to open the live version) */
+    /* mobile: replace the interactive iframe with a static image */
     .viz-mobile { display:none; }
-    .viz-mobile img { border-radius:10px; }
+    .viz-mobile { border-radius:10px; }
     @media (max-width: 768px){
       .demo-frame { display:none; }
       .viz-mobile { display:block; }
-      .viz-hint   { display:block; font-size:.85rem; color:#7a7a7a; margin-top:.5rem; }
     }
   </style>
 </head>
@@ -253,10 +255,7 @@
         <div class="demo-frame ratio-tradeoff">
           <iframe src="./static/interactive/tradeoff.html" title="Task accuracy vs privacy trade-off" loading="lazy"></iframe>
         </div>
-        <a class="viz-mobile" href="./static/interactive/tradeoff.html" target="_blank" rel="noopener">
-          <img src="./static/figures/tradeoff_mobile.png" class="interpolation-image" alt="Task accuracy vs. privacy trade-off across models.">
-        </a>
-        <p class="viz-hint">Tap the figure to open the interactive version.</p>
+        <img class="viz-mobile interpolation-image" src="./static/figures/tradeoff_mobile.png" alt="Task accuracy vs. privacy trade-off across models.">
         <!-- <p class="fig-caption">
           <b>Task accuracy vs. privacy score</b>  across 22 models, prompt variants, and TextGrad
           prompt optimization. No model can be both useful and private, revealing an inherent vulnerability in current models.
@@ -285,8 +284,17 @@
               strictly positive output probability. Over an adversarial sequence of length $N$, the
               probability of leakage grows as
             </p>
-            <p class="has-text-centered eq" style="margin:1rem 0;">
+            <!-- desktop: single line -->
+            <p class="has-text-centered eq eq-desktop" style="margin:1rem 0;">
               $$P(\text{leak}\mid x)\ \ge\ 1-(1-\varepsilon)^{N}\ \ge\ 1-e^{-\varepsilon N}\ \xrightarrow[N\to\infty]{}\ 1.$$
+            </p>
+            <!-- mobile: stacked at each relation so it never overflows -->
+            <p class="has-text-centered eq eq-mobile" style="margin:1rem 0;">
+              $$\begin{aligned}
+                P(\text{leak}\mid x)\ &\ge\ 1-(1-\varepsilon)^{N}\\[2pt]
+                &\ge\ 1-e^{-\varepsilon N}\\[2pt]
+                &\xrightarrow[N\to\infty]{}\ 1.
+              \end{aligned}$$
             </p>
             <p>
               Soft-constraint defenses, such as system prompts, alignment, prompt optimization, can only
@@ -328,10 +336,7 @@
         <div class="demo-frame ratio-iso">
           <iframe src="./static/interactive/isolation_results.html" title="Privacy gains from Oracle masking" loading="lazy"></iframe>
         </div>
-        <a class="viz-mobile" href="./static/interactive/isolation_results.html" target="_blank" rel="noopener">
-          <img src="./static/figures/isolation_mobile.png" class="interpolation-image" alt="Privacy gains under Oracle masking.">
-        </a>
-        <p class="viz-hint">Tap the figure to open the interactive version.</p>
+        <img class="viz-mobile interpolation-image" src="./static/figures/isolation_mobile.png" alt="Privacy gains under Oracle masking.">
         <!-- <p class="fig-caption">
           Applying private field isolation. Arrows show each model's shift under Oracle
           masking: privacy score jumps to <b>&ge;90%</b> across families and scales while task accuracy is
