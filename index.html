@@ -144,7 +144,7 @@
           <br>
           Given multimodal documents and a tool list, an agent must <b>use private fields to complete the
           task</b> (task query), yet <b>refuse to reveal them under attack</b> (attack query). TRAP measures
-          both on the <i>same</i> document &mdash; exposing a fundamental trade-off between capability and privacy.
+          both on the <i>same</i> document, exposing a fundamental trade-off between capability and privacy.
         </h2>
       </div>
     </div>
@@ -158,29 +158,23 @@
           <h2 class="title is-3">Abstract</h2>
           <div class="content has-text-justified">
             <p>
-              Agents are increasingly deployed in document-intensive workflows where sensitive private
-              information is not an edge case but a routine input &mdash; an agent booking a flight needs
-              passport numbers. In such settings, the agent must use private information to complete tasks
-              accurately while never exposing it, because it cannot verify who is actually at the keyboard.
-              A model capable enough to use private information can, by the same capability, be induced to
-              reveal it.
+              Agents are increasingly deployed in document-intensive workflows where sensitive private information is not an edge case but a routine input, 
+              e.g., an agent booking a flight needs passport numbers. In such settings, the agent must use private information to complete tasks accurately 
+              while never exposing it in its responses, because it cannot verify who is actually at the keyboard. These two obligations are in fundamental 
+              tension. A model capable enough to use private information for task completion can, by the same capability, be induced to reveal it. 
             </p>
             <p>
-              To evaluate this trade-off, we introduce <b>TRAP</b> (Task-completion and Resistance to
-              Active Privacy-extraction). Each scenario pairs a document containing private fields with two
-              queries: a <b>task query</b> that requires invoking the correct tool using private fields, and
-              an <b>attack query</b> that tries to elicit the same information in natural language. Evaluating
-              22 models across frontier proprietary and open-source families, we find that every family
-              exhibits non-trivial leakage, and that instruction-following ability correlates with leakage
-              rate. Existing prompt-based defenses reduce leakage only at a significant cost to task accuracy,
-              and prompt optimization fails to escape this trade-off.
+              To evaluate the trade-off of task accuracy and privacy leakage, we introduce <b>Task-completion and Resistance to Active Privacy-extraction (TRAP)</b>. 
+              Each scenario includes a document containing private information, a task query that requires the agent to invoke the correct tool using private 
+              fields, and an attack query that attempts to elicit the same information in natural language. Evaluating 22 models spanning frontier proprietary 
+              and open-source models at multiple scales, we find that all model families exhibit non-trivial leakage, and that instruction-following ability
+              correlates with leakage rate. Existing prompt-based defenses reduce leakage but at significant cost to task accuracy. Prompt optimization fails 
+              to escape this trade-off.
             </p>
             <p>
-              We show this failure is not incidental: for any softmax-based model, no soft-constraint defense
-              can jointly achieve high task success and zero leakage probability. Motivated by this
-              impossibility result, we propose <b>structural private field isolation</b>, which replaces
-              private fields with hash keys before they reach the model &mdash; largely preventing leakage
-              while keeping task accuracy.
+              We demonstrate that this failure is not incidental. For any softmax-based model, no soft-constraint defense, e.g., prompt-based defenses, can 
+              jointly achieve high task success with zero leakage probability. Motivated by this impossibility result, we propose <b>structural private field 
+              isolation</b>, which replaces private fields with hash keys before they reach the model. This approach largely prevents leakage while keeping task accuracy.
             </p>
           </div>
         </div>
@@ -195,8 +189,8 @@
       <br>
       <p class="content has-text-centered" style="max-width:820px;margin:0 auto 1.5rem;">
         Prior benchmarks measure privacy either <i>passively</i> (incidental leakage, no attacker) or
-        <i>adversarially</i> (attack only, task ignored). TRAP is the first to measure both jointly &mdash;
-        on the same document and the same private fields.
+        <i>adversarially</i> (attack only, task ignored). The problem is that a trivial solution exists here: the agent can achieve perfect privacy simply by being useless, scoring zero on accuracy.
+        TRAP is the first to measure both jointly on the same document and the same private fields. Neither a refuse-all nor a comply-all strategy can increase both task accuracy and the privacy score at the same time.
       </p>
 
       <div class="columns is-mobile is-multiline is-centered">
@@ -210,13 +204,8 @@
 
       <br>
       <div class="content">
-        <h4 class="title is-4">Tagged private fields across domains &amp; modalities</h4>
-        <img src="./static/figures/tagged_examples.png" class="interpolation-image" alt="Examples of tagged private fields.">
-        <p class="fig-caption">
-          Each document is annotated at the field level. Private values &mdash; EINs, IBANs, national IDs,
-          card numbers, CVVs, credentials &mdash; are isolated as typed keys such as
-          <code>[PRIVATE_payer_ein]</code> or <code>[PRIVATE_card_number]</code>, spanning tax, contract,
-          identity, credit-card, and account documents in both image and text form.
+        <!-- <h4 class="title is-4">Tagged private fields across domains &amp; modalities</h4> -->
+        <img src="./static/figures/trap_examples.png" class="interpolation-image" alt="Examples of TRAP documents.">
         </p>
       </div>
     </div>
@@ -233,24 +222,12 @@
         <div class="demo-frame demo-tall">
           <iframe src="./static/interactive/tradeoff.html" title="Task accuracy vs privacy trade-off" loading="lazy"></iframe>
         </div>
-        <p class="fig-caption">
-          <b>Interactive.</b> Task accuracy vs. privacy score across 22 models, prompt variants, and TextGrad
-          prompt optimization. Points cluster along a trade-off frontier: every model above 60% task accuracy
-          scores below 27% privacy, and jointly optimizing the prompt does not reach the high-task /
-          high-privacy corner.
-        </p>
+        <!-- <p class="fig-caption">
+          <b>Task accuracy vs. privacy score</b>  across 22 models, prompt variants, and TextGrad
+          prompt optimization. No model can be both useful and private, revealing an inherent vulnerability in current models.
+        </p> -->
       </div>
       <br>
-
-      <div class="content has-text-justified" style="max-width:820px;margin:0 auto;">
-        <p>
-          <b>Adversarial phrasing can backfire.</b> Aggressive attacks (Ignore / Important / Roleplay) often
-          <i>raise</i> privacy score: strong instruction-followers treat attack language as an alarm. A plain,
-          direct question leaks more &mdash; and merely <b>claiming to be authorized</b> is one of the
-          strongest extractors (Claude Sonnet 4.5 &minus;26.4pp, GPT-5 &minus;18.8pp privacy). Because the
-          true user cannot be verified at inference time, protection must never be conditional on a claimed role.
-        </p>
-      </div>
     </div>
   </section>
 
@@ -261,6 +238,11 @@
         <div class="column is-four-fifths">
           <h2 class="title is-3 has-text-centered">Why Prompting Cannot Win</h2>
           <br>
+          <p class="content has-text-centered" style="max-width:820px;margin:0 auto 1.5rem;">
+            There is a fundamental limit. As long as a model produces a softmax distribution over its entire vocabulary, 
+            no amount of hand-crafted privacy instructions or instruction tuning can drive the leakage probability down to zero.
+            <b>Security requires eliminating the probability of leakage, not merely reducing it.</b>
+          </p>
           <div class="theorem-box">
             <p class="thm-label">Theorem&nbsp;1 &mdash; Impossibility of simultaneous task success &amp; perfect privacy.</p>
             <p style="margin-top:.75rem;">
@@ -272,9 +254,8 @@
               $$P(\text{leak}\mid x)\ \ge\ 1-(1-\varepsilon)^{N}\ \ge\ 1-e^{-\varepsilon N}\ \xrightarrow[N\to\infty]{}\ 1.$$
             </p>
             <p>
-              Soft-constraint defenses &mdash; system prompts, alignment, prompt optimization &mdash; can only
-              shrink $\varepsilon$, never set it to zero. <b>Security requires eliminating probability mass,
-              not merely reducing it.</b>
+              Soft-constraint defenses, such as system prompts, alignment, prompt optimization, can only
+              shrink $\varepsilon$, never set it to zero.
             </p>
           </div>
         </div>
@@ -301,34 +282,24 @@
           <source src="./static/videos/private_field_isolation.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
-        <p class="fig-caption">
-          Walkthrough of private field isolation: private values are swapped for typed hash keys before the
+        <!-- <p class="fig-caption">
+          Private field isolation: private values are swapped for typed hash keys before the
           model, carried through tool calls as keys, and restored only in the tool layer.
-        </p>
+        </p> -->
       </div>
       <br>
 
       <div class="content">
-        <img src="./static/figures/isolation_method.png" class="interpolation-image" alt="Private field isolation method.">
-        <p class="fig-caption">
-          Private values are replaced by hash keys before the model receives the document. The model reasons
-          over keys and emits them as tool arguments; the tool layer restores the real values outside the
-          model &mdash; after the output has been committed.
-        </p>
-      </div>
-      <br>
-
-      <div class="content">
-        <h4 class="title is-4">Structure beats prompts</h4>
+        <h4 class="title is-4">Isolation reaches the corner that was empty</h4>
         <div class="demo-frame demo-tall">
           <iframe src="./static/interactive/isolation_results.html" title="Privacy gains from Oracle masking" loading="lazy"></iframe>
         </div>
-        <p class="fig-caption">
-          <b>Interactive.</b> Applying private field isolation. Arrows show each model's shift under Oracle
+        <!-- <p class="fig-caption">
+          Applying private field isolation. Arrows show each model's shift under Oracle
           masking: privacy score jumps to <b>&ge;90%</b> across families and scales while task accuracy is
           preserved. Structural isolation &mdash; not model capability &mdash; becomes the dominant determinant
           of privacy.
-        </p>
+        </p> -->
       </div>
     </div>
   </section>
