@@ -218,7 +218,7 @@
 
       <div class="content">
         <h4 class="title is-4">No model escapes the trade-off</h4>
-        <div class="demo-frame demo-tall">
+        <div class="demo-frame demo-tall" style=""height:1000px">
           <iframe src="./static/interactive/tradeoff.html" title="Task accuracy vs privacy trade-off" loading="lazy"></iframe>
         </div>
         <!-- <p class="fig-caption">
@@ -242,7 +242,7 @@
             no amount of hand-crafted privacy instructions or instruction tuning can drive the leakage probability down to zero.
             <b>Security requires eliminating the probability of leakage, not merely reducing it.</b>
           </p>
-          <div class="theorem-box">
+          <div class="theorem-box" style="max-width:820px">
             <p class="thm-label">Theorem&nbsp;1 &mdash; Impossibility of simultaneous task success &amp; perfect privacy.</p>
             <p style="margin-top:.75rem;">
               For a softmax model that can complete the task, any private token needed for the task has
@@ -277,7 +277,7 @@
       <!-- ===== Method video ===== autoplay requires muted (satisfied). -->
       <div class="content">
         <video id="isolation-video" class="interpolation-image" autoplay muted loop playsinline controls
-               style="border-radius:10px;">
+               style="height:820px;border-radius:10px;">
           <source src="./static/videos/private_field_isolation.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
